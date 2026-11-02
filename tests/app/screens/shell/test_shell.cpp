@@ -3250,6 +3250,7 @@ TEST("window: full screen drops the title bar strip and puts the header over the
     CHECK(h.sh->header().windowRect().x == 0); // back in the strip, window-wide
 }
 #endif
+
 TEST("thread panel: a narrow window keeps it inside, a wider one brings the saved width back") {
     Harness       h;
     plat::Window &w      = h.win->native();
@@ -3337,6 +3338,22 @@ TEST("thread panel: dragged well past its widest it takes the whole room, and dr
     h.sh->closeThread(); // closing ends it: the next thread opens beside the messages
     pump();
     CHECK(messages->visible());
+}
+
+TEST("sidebar footer: the avatar menu hides the workspace rail and remembers it") {
+    Harness h;
+    CHECK(h.sh->rail()->visible());
+    shell::SidebarFooter &f = h.sh->sidebar().footer();
+    CHECK(f.railShown());
+    f.toggleRail();
+    pump();
+    CHECK_FALSE(h.sh->rail()->visible());
+    CHECK_FALSE(h.settings.showRail);
+    CHECK_FALSE(f.railShown());
+    f.toggleRail();
+    pump();
+    CHECK(h.sh->rail()->visible());
+    CHECK(h.settings.showRail);
 }
 
 TEST("window: fit to screen — shrink to the work area, pull back, refit (issue #45)") {
